@@ -42,3 +42,39 @@
     xhr.send();
 })();
 
+//Ajax con Fetch -> Fetch trabaja co Promesas
+(() => {
+    $fetch = document.getElementById("fetch"),
+    $fragment = document.createDocumentFragment();
+
+    //Método por defecto para Fetch es GET
+    fetch("https://jsonplaceholder.typicode.com/users")
+        /*.then(response => {
+        console.log(response);
+        //Validando un error con FecthAPI y objeto Promise. Si response.ok es true sino ...
+        return response.ok ? response.json() : Promise.reject(response);     //.json Tambien hay .text y .blob. Elegir depende a que formato recibo de la API   
+        })*/
+        //Transformando respuesta de Fetch a un json
+        .then((response) => response.ok ? response.json() : Promise.reject(response))
+        //Este then va recibir la respuesta del then de arriba de arriba
+        .then(json => {
+            // console.log(json);
+
+            json.forEach(e => {
+                //console.log(e);
+                const $li = document.createElement("li");
+                $li.innerHTML = `ID: ${e.id} Nombre: ${e.name} Phone: ${e.phone} City: ${e.address.city}`;
+                $fragment.appendChild($li);
+            });
+            $fetch.appendChild($fragment);
+        })
+        .catch(error => {
+            console.log(error);
+            //En el statusText indican el error pero si no lo indican imprimirá un "Ocurrió un error"
+            let message = error.statusText || "Ocurrió un error";
+            $fetch.innerHTML = `Error ${error.status}: ${message}`;
+        })
+        .finally(() => 
+            console.log("Esto se ejecutará independientemente del resultado de la Promesa Fetch")
+        ); 
+})();
