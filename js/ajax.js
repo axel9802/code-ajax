@@ -4,8 +4,8 @@
 //Paso 4 Enviar
 (() => {
     const xhr = new XMLHttpRequest(),
-    $xhr = document.getElementById("xhr"),
-    $fragment = document.createDocumentFragment();
+        $xhr = document.getElementById("xhr"),
+        $fragment = document.createDocumentFragment();
 
     
     xhr.addEventListener("readystatechange", e => {
@@ -77,4 +77,40 @@
         .finally(() => 
             console.log("Esto se ejecutará independientemente del resultado de la Promesa Fetch")
         ); 
+})();
+
+//Ajax con API Fetch + Async-Await
+(() => {
+    $fetchAsync = document.getElementById("fetch-async"),
+    $fragment = document.createDocumentFragment();
+
+    async function getData(){
+        try {
+            //await -> Esperar Antes de ejecutar la siguiente linea de codigo
+            let resp = await fetch("https://jsonplaceholder.typicode.com/users"),     //Método por defecto para Fetch es GET
+                json = await resp.json(); //Convertir la respuesta a json. await -> Esperar a convertirlo antes de ejecutar la siguiente linea
+           console.log(resp, json);
+
+           //THROW es como un return que envía el flujo de la programación al catch
+            //if (!resp.ok) throw new Error("gaaaaa"); // new Error solo recibe strings
+            if (!resp.ok) throw {status: resp.status, statusText: resp.statusText}; //lanzo un objeto con status y statusText al catch. THROW SIEMPRE LANZA AL CATCH
+
+
+           json.forEach(e => {
+            //console.log(e);
+            const $li = document.createElement("li");
+            $li.innerHTML = `ID: ${e.id} Nombre: ${e.name} Phone: ${e.phone} City: ${e.address.city}`;
+            $fragment.appendChild($li);
+        });
+        $fetchAsync.appendChild($fragment);
+        } catch (error) {
+            console.log(error)
+            let message = error.statusText || "Ocurrió un error";
+            $fetchAsync.innerHTML = `Error ${error.status}: ${message}`;
+        } finally {
+            console.log("Esto se ejecutará independientemente del try-catch")
+        }
+    }
+
+    getData();
 })();
