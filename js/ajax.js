@@ -114,3 +114,30 @@
 
     getData();
 })();
+
+//Ajax con Libreria Axios
+(() => {
+    $axios = document.getElementById("axios"),
+    $fragment = document.createDocumentFragment();
+
+    axios.get("https://jsonplaceholder.typicode.com/user")
+    .then(resp => {
+        console.log(resp);
+        let json = resp.data;
+        json.forEach(e => {
+            //console.log(e);
+            const $li = document.createElement("li");
+            $li.innerHTML = `ID: ${e.id} Nombre: ${e.name} Phone: ${e.phone} City: ${e.address.city}`;
+            $fragment.appendChild($li);
+        });
+        $axios.appendChild($fragment);
+    })
+    .catch(error => {
+        console.log(error.response);
+        let message = error.response.statusText || "Ocurrió un error";
+        $axios.innerHTML = `Error ${error.response.status}: ${message}`;
+    })
+    .finally(() => {
+        console.log("Esto se ejecutará independientemente del resultado Axios");
+    });
+})();
